@@ -1,0 +1,67 @@
+import empresaFerroviaria.*
+import trenes.*
+
+// auto-generated at 19/10/2018 12:05:55
+describe "empresa de trenes" {
+	
+	const vagonDeCarga1 = new VagonCarga (cargaMax=300)
+	const vagonDeCarga2 = new VagonCarga (cargaMax=1000)
+	const vagonDeCarga3 = new VagonCarga (cargaMax=2000)
+	const vagonDeCarga4 = new VagonCarga (cargaMax=700)
+	const vagonDePasajeros1= new VagonPasajeros (largo=20, ancho=10, cantBanios=1)
+	const vagonDePasajeros2= new VagonPasajeros (largo=30, ancho=20, cantBanios=2)
+	const vagonDePasajeros3= new VagonPasajeros (largo=40, ancho=30, cantBanios=3)
+	const vagonDePasajeros4= new VagonPasajeros (largo=50, ancho=40, cantBanios=4)
+	const locomotora1= new Locomotora (peso=1000, pesoMaxArrastre=12000, velocidadMax=50)
+	const locomotora2= new Locomotora (peso=2000, pesoMaxArrastre=13000, velocidadMax=50)
+	const locomotora3= new Locomotora (peso=3000, pesoMaxArrastre=14000, velocidadMax=50)
+	const locomotora4= new Locomotora (peso=4000, pesoMaxArrastre=15000, velocidadMax=50)
+	const formacion1= new FormacionLargaDist (locomotoras= #{locomotora1}, vagones= #{vagonDeCarga1, vagonDePasajeros1}, uneDosCiudadesGrandes= true)  
+	const formacion2= new FormacionCortaDist (locomotoras= #{locomotora2}, vagones= #{vagonDeCarga2, vagonDePasajeros2})  
+	const formacion3= new FormacionAltaVelocidad (locomotoras= #{locomotora3}, vagones= #{vagonDeCarga3, vagonDeCarga4, vagonDePasajeros3, vagonDePasajeros4}, uneDosCiudadesGrandes= false)  
+	const deposito1= new Deposito (formaciones= #{formacion1, formacion2, formacion3}, locomotorasSueltas= #{locomotora4})
+	
+    test "total pasajeros"{
+    assert.equals(200,formacion1.totalPasajeros())	
+    }
+	test "vagones livianos"{
+	assert.equals(1, formacion2.vagonesLivianos())	
+	}
+	test "velocidad maxima"{
+	assert.equals(50,formacion3.velocidadMaxima())	
+	}
+	test "formacion eficiente"{
+	assert.that(formacion1.formacionEficiente())
+	}
+	test "formacion puede moverse"{
+    assert.that(not formacion2.puedeMoverse())
+	}	
+	test "cuanto para que se mueva"{
+	assert.equals(14160, formacion2.cuantoParaMoverse())
+	}
+	test "conjunto de vagones mas pesados"{
+	assert.equals(#{vagonDePasajeros1,vagonDePasajeros2,vagonDePasajeros4},empresaFerroviaria.conjuntoPesados(deposito1))	
+	}
+	test "necesita conductor experimentado"{
+	assert.that(deposito1.necesitaCondExperimentado())
+	}
+	test "agregar locomotora"{
+    deposito1.agregarLocomotoraParaMov(formacion2)	
+	assert.that(not formacion2.puedeMoverse())
+	}
+	test "esta bien armada larga dist"{
+    assert.that(not formacion1.estaBienArmada())
+	}
+	test "esta bien armada corta dist"{
+    assert.that(not formacion2.estaBienArmada())
+	}
+	test "velocidad larga distancia"{
+	assert.equals(50, formacion1.velocidadMaxima())	
+	}
+	test "velocidad corta distancia"{
+	assert.equals(50, formacion2.velocidadMaxima())	
+	}
+	test "esta bien armada alta velocidad"{
+	assert.that(not formacion3.estaBienArmada())	
+	}
+}
